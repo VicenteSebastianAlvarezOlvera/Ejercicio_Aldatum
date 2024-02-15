@@ -50,25 +50,6 @@ public class aldatum {
         
         //Converts the response to JSON format
         JSONArray array = (JSONArray) object;        
-        //JSONObject object2 = (JSONObject)array.get(0);
-        //System.out.println(array); 
-        //System.out.println(inputLine);
-
-        //Save the file to local
-        try {
-            // Create a FileWriter to write to the file
-            FileWriter fileWriter = new FileWriter("output.json");
-            String jsonString = array.toJSONString();
-            // Write the JSON string to the file
-            fileWriter.write(jsonString);
-
-            // Close the FileWriter
-            fileWriter.close();
-
-            //System.out.println("JSON saved to " + filePath);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
         //Sort by name
         try {
@@ -90,24 +71,6 @@ public class aldatum {
             //obj.put("position", i + 1);
             totalSum += nameScore;
         }
-
-        //Save sorted
-        
-        try {
-            // Create a FileWriter to write to the file
-            FileWriter fileWriter = new FileWriter("output2.json");
-            String jsonString = array.toJSONString();
-            // Write the JSON string to the file
-            fileWriter.write(jsonString);
-
-            // Close the FileWriter
-            fileWriter.close();
-
-            //System.out.println("JSON saved to " + filePath);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        //System.out.println("Final value: " + totalSum);
 
         //Creates JSON to send
         JSONObject resultado = new JSONObject();
@@ -143,23 +106,7 @@ public class aldatum {
         }
         int responseCode = connectionTWS.getResponseCode();
         System.out.println("Response Code: " + responseCode);
-        
-        
-        //Save payload as JSON
-        //try {
-        //    // Create a FileWriter to write to the file
-        //    FileWriter fileWriter = new FileWriter("payload.json");
-        //    String jsonString = resultado.toJSONString();
-        //    // Write the JSON string to the file
-        //    fileWriter.write(jsonString);
-//
-        //    // Close the FileWriter
-        //    fileWriter.close();
-//
-        //    //System.out.println("JSON saved to " + filePath);
-        //} catch (IOException e) {
-        //    e.printStackTrace();
-        //}
+
     }
 
     private static int calculateNameScore(String name) {
