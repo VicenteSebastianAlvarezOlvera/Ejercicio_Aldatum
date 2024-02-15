@@ -1,8 +1,8 @@
 import java.net.*;
 import java.io.*;
 import java.util.Comparator;
-import java.util.Iterator; 
-import java.util.Map; 
+//import java.util.Iterator; 
+//import java.util.Map; 
 
 //Imports for using JSONs
 import org.json.simple.JSONArray; 
@@ -11,26 +11,27 @@ import org.json.simple.parser.*;
 
 
 public class aldatum {
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings({ "deprecation", "unchecked" })
     //Main function, which will connect to the web service using the link and the authentication code
     public static void main(String[] args) throws Exception{
         //Link of the Source Web Service
         String SourceWebService = "https://elastic.snaplogic.com/api/1/rest/slsched/feed/Partners/AllDatum/Entrevista_Integracion/LeeArchivoNombresTask";
+        
         //Link of the parameters
-        String Param1 = "first_names";
-        String Param2 = "txt";
+        String archivoSWS = "first_names";
+        String extensionSWS = "txt";
         //We create the authentication token
-        String authen = "Bearer h8JLQvfj5Yl1iQeOvBT43d17RoDBO6UQ";
+        String authenSWS = "Bearer h8JLQvfj5Yl1iQeOvBT43d17RoDBO6UQ";
 
         //We create the final link, combining the Source Web Service and its 2 parameters, and create the URL to be used
-        String Link = SourceWebService + "?archivo=" + Param1 + "&extension=" + Param2;
-        URL enlace = new URL(Link);
+        String LinkSWS = SourceWebService + "?archivo=" + archivoSWS + "&extension=" + extensionSWS;
+        URL enlaceSWS = new URL(LinkSWS);
         
         //Creates a connection 
-        HttpURLConnection connection = (HttpURLConnection) enlace.openConnection();
+        HttpURLConnection connection = (HttpURLConnection) enlaceSWS.openConnection();
         //Specifies the type of request and its authentication key
         connection.setRequestMethod("GET");
-        connection.setRequestProperty("Authorization", authen);
+        connection.setRequestProperty("Authorization", authenSWS);
 
         ////Creates a buffered readder in order to get the response
         BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -79,7 +80,7 @@ public class aldatum {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        //
+        //Gets the sum of all names
         int totalSum = 0;
         for (int i = 0; i < array.size(); i++) {
             JSONObject obj = (JSONObject) array.get(i);
@@ -106,28 +107,59 @@ public class aldatum {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println("Final value: " + totalSum);
+        //System.out.println("Final value: " + totalSum);
 
         //Creates JSON to send
         JSONObject resultado = new JSONObject();
         resultado.put("ResultadoObtenido", totalSum);
         System.out.println(resultado);
 
+        //Prepare link, parameters and authentication to send delivery
+        String TargetWebService = "https://elastic.snaplogic.com/api/1/rest/slsched/feed/Partners/AllDatum/Entrevista_Integracion/VerificaResultadoEjercicioTecnico1ALLDATUMTask";
+        //Link of the parameters
+        String archivoTWS = "first_names";
+        String extensionTWS = "txt";
+        String nombreTWS = "Vicente_Alvarez";
+        String pruebaTWS = "1";
+        //We create the authentication token
+        String authenTWS = "Bearer giqJWNuzhOnDTYaa1Diy1jw7FQhqZSwl";
 
-        try {
-            // Create a FileWriter to write to the file
-            FileWriter fileWriter = new FileWriter("payload.json");
-            String jsonString = array.toJSONString();
-            // Write the JSON string to the file
-            fileWriter.write(jsonString);
+        //We create the final link, combining the Source Web Service and its 2 parameters, and create the URL to be used
+        String LinkTWS = TargetWebService + "?archivo=" + archivoTWS + "&extension=" + extensionTWS + "&nombre=" + nombreTWS + "&prueba=" + pruebaTWS;
+        //System.out.println(LinkTWS);
+        URL enlaceTWS = new URL(LinkTWS);
 
-            // Close the FileWriter
-            fileWriter.close();
+        //Creates a connection 
+        HttpURLConnection connectionTWS = (HttpURLConnection) enlaceTWS.openConnection();
+        ////Specifies the type of request and its authentication key
+        connectionTWS.setRequestMethod("POST");
+        connectionTWS.setRequestProperty("Authorization", authenTWS);
+        connectionTWS.setRequestProperty("Content-Type", "application/json");
+        connectionTWS.setDoOutput(true);
 
-            //System.out.println("JSON saved to " + filePath);
-        } catch (IOException e) {
-            e.printStackTrace();
+        try(OutputStream os = connectionTWS.getOutputStream()) {
+            byte[] input = resultado.toString().getBytes("utf-8");
+            os.write(input, 0, input.length);
         }
+        int responseCode = connectionTWS.getResponseCode();
+        System.out.println("Response Code: " + responseCode);
+        
+        
+        //Save payload as JSON
+        //try {
+        //    // Create a FileWriter to write to the file
+        //    FileWriter fileWriter = new FileWriter("payload.json");
+        //    String jsonString = resultado.toJSONString();
+        //    // Write the JSON string to the file
+        //    fileWriter.write(jsonString);
+//
+        //    // Close the FileWriter
+        //    fileWriter.close();
+//
+        //    //System.out.println("JSON saved to " + filePath);
+        //} catch (IOException e) {
+        //    e.printStackTrace();
+        //}
     }
 
     private static int calculateNameScore(String name) {
