@@ -1,12 +1,13 @@
 import java.net.*;
 import java.io.*;
+import java.util.Comparator;
 import java.util.Iterator; 
 import java.util.Map; 
 
 //Imports for using JSONs
-//import org.json.simple.JSONArray; 
-//import org.json.simple.JSONObject; 
-//import org.json.simple.parser.*;
+import org.json.simple.JSONArray; 
+import org.json.simple.JSONObject; 
+import org.json.simple.parser.*;
 
 
 public class aldatum {
@@ -31,26 +32,90 @@ public class aldatum {
         connection.setRequestMethod("GET");
         connection.setRequestProperty("Authorization", authen);
 
-        //Creates a buffered readder in order to get the response
+        ////Creates a buffered readder in order to get the response
         BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 
         StringBuilder response = new StringBuilder();
         String inputLine;
         while ((inputLine = in.readLine()) != null) {
             response.append(inputLine);
-            System.out.println(inputLine);
+            //System.out.println(inputLine);
         }
         in.close();
 
-        //JSONParser parser=new JSONParser();
-        //Object object = parser.parse(in);
-        //
-        //JSONArray array = (JSONArray) object;        
+        //Creates a JSON parser to get the response 
+        JSONParser parser=new JSONParser();
+        Object object = parser.parse(response.toString());
+        
+        //Converts the response to JSON format
+        JSONArray array = (JSONArray) object;        
         //JSONObject object2 = (JSONObject)array.get(0);
-        //System.out.println(object2.get("hello")); 
-
+        //System.out.println(array); 
         //System.out.println(inputLine);
 
-        
+        //Save the file to local
+        try {
+            // Create a FileWriter to write to the file
+            FileWriter fileWriter = new FileWriter("output.json");
+            String jsonString = array.toJSONString();
+            // Write the JSON string to the file
+            fileWriter.write(jsonString);
+
+            // Close the FileWriter
+            fileWriter.close();
+
+            //System.out.println("JSON saved to " + filePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //Sort by name
+        try {
+            // Sort the JSONArray by the "NAME" field
+            array.sort(Comparator.comparing(obj -> ((JSONObject) obj).get("NAME").toString()));
+
+            // Print the sorted JSONArray
+            //System.out.println(array.toJSONString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //
+        int totalSum = 0;
+        for (int i = 0; i < array.size(); i++) {
+            JSONObject obj = (JSONObject) array.get(i);
+            String name = (String) obj.get("NAME");
+            int nameScore = calculateNameScore(name) * (i + 1); // Multiply by alphabetical position
+            //obj.put("value", nameScore);
+            //obj.put("position", i + 1);
+            totalSum += nameScore;
+        }
+
+        //Save sorted
+        /* 
+        try {
+            // Create a FileWriter to write to the file
+            FileWriter fileWriter = new FileWriter("output2.json");
+            String jsonString = array.toJSONString();
+            // Write the JSON string to the file
+            fileWriter.write(jsonString);
+
+            // Close the FileWriter
+            fileWriter.close();
+
+            //System.out.println("JSON saved to " + filePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }*/
+        System.out.println("Final value: " + totalSum);
+        //Get values for each name
+
+    }
+
+    private static int calculateNameScore(String name) {
+        int score = 0;
+        for (char c : name.toCharArray()) {
+            score += Character.toUpperCase(c) - 'A' + 1; // Calculate alphabetical value
+        }
+        return score;
     }
 }
