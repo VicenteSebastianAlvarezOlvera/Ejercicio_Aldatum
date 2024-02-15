@@ -91,7 +91,7 @@ public class aldatum {
         }
 
         //Save sorted
-        /* 
+        
         try {
             // Create a FileWriter to write to the file
             FileWriter fileWriter = new FileWriter("output2.json");
@@ -105,10 +105,29 @@ public class aldatum {
             //System.out.println("JSON saved to " + filePath);
         } catch (IOException e) {
             e.printStackTrace();
-        }*/
+        }
         System.out.println("Final value: " + totalSum);
-        //Get values for each name
 
+        //Creates JSON to send
+        JSONObject resultado = new JSONObject();
+        resultado.put("ResultadoObtenido", totalSum);
+        System.out.println(resultado);
+
+
+        try {
+            // Create a FileWriter to write to the file
+            FileWriter fileWriter = new FileWriter("payload.json");
+            String jsonString = array.toJSONString();
+            // Write the JSON string to the file
+            fileWriter.write(jsonString);
+
+            // Close the FileWriter
+            fileWriter.close();
+
+            //System.out.println("JSON saved to " + filePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private static int calculateNameScore(String name) {
